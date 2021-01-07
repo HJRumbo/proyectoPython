@@ -24,18 +24,18 @@ def ventana():
     txtI.focus()
 
     def limpiar():
-        txtI.set("")
+        txtI.delete(0, END)
         txtI.focus()
-        txt.set("")
+        txt.delete(0, END)
         combo.set("M")
-        txtE.insert(0, "")
+        txtE.delete(0, END)
         lblPr.configure(text=str(""))
 
     def buscarXId():
         persona = personaService.buscarXIdentificacion(txtI.get())
         txt.insert(0, persona.nombre)
         combo.set(persona.sexo)
-        txtE.insert(0, persona.edad)
+        txtE.insert(0, int(persona.edad))
         lblPr.configure(text=str(persona.pulsaciones))
 
     btnB = Button(window, text="Buscar", command=buscarXId)
@@ -72,6 +72,7 @@ def ventana():
         except:
             mensaje = "Error al momento de guardar los datos. Por favor, verifique que llenó todos los campos. "
         messagebox.showinfo("Mensaje", mensaje)
+        limpiar()
 
     btn = Button(window, text="Guardar", command=clicked)
     btn.grid(column=5, row=14)
@@ -82,6 +83,7 @@ def ventana():
     def eliminar():
         mensaje = personaService.eliminar(txtI.get())
         messagebox.showinfo("Mensaje", mensaje)
+        limpiar()
 
     btnEl = Button(window, text="Eliminar", command=eliminar)
     btnEl.grid(column=4, row=16, pady=10)
@@ -96,6 +98,7 @@ def ventana():
         lblPr.configure(text=str(persona.pulsaciones))
         mensaje = personaService.editar(persona)
         messagebox.showinfo("Mensaje", mensaje)
+        limpiar()
 
     btnEl = Button(window, text="Editar", command=editar)
     btnEl.grid(column=5, row=16, pady=10)
