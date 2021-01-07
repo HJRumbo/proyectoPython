@@ -1,6 +1,8 @@
 from array import array
+from os import remove
+import os.path as path
 
-from Entity import Persona
+from Entity.Persona import Persona
 
 
 class PersonaRpository(object):
@@ -12,28 +14,34 @@ class PersonaRpository(object):
     def guardarPersona(self, persona):
         """description of method"""
         f = open(self.file, 'a')
-        f.write(persona.nombre + ';' + str(persona.edad) + ';' + persona.sexo + ';' + str(persona.pulsaciones))
+        f.write(
+            persona.identificacion + ';' + persona.nombre + ';' + str(persona.edad) + ';' + persona.sexo + ';' + str(
+                persona.pulsaciones))
         f.write("\n")
         f.close()
 
     def consultarTodos(self):
         """description of method"""
-        f = open(self.file, 'r')
-        for line in f.readlines():
+        if path.exists(self.file):
+            self.personas.clear()
+            f = open(self.file, 'r')
+            for line in f.readlines():
+                separador = ";"
+                separado = line.split(separador)
 
-            persona = Persona
+                identificacion = separado[0]
+                nombre = separado[1]
+                edad = separado[2]
+                sexo = separado[3]
 
-            separador = ";"
-            separado = line.split(separador)
+                persona = Persona(identificacion, nombre, sexo, float(edad))
+                persona.calcularpulsacion()
 
-            persona.nombre = separado[0]
-            persona.edad = separado[1]
-            persona.sexo = separado[2]
-            persona.pulsaciones = separado[3]
-
-            self.personas[len(self.personas):] = [persona]
-        f.close()
-        return self.personas
+                self.personas[len(self.personas):] = [persona]
+            f.close()
+            return self.personas
+        else:
+            return None
 
     def mapear(self, line):
         separador = ";"
@@ -48,9 +56,25 @@ class PersonaRpository(object):
 
         return persona
 
-    def buscarXNombre(self, nombre):
+    def buscarXIdentificacion(self, identificacion):
         personas = self.consultarTodos()
         for item in personas:
-            if item.nombre == nombre:
+            if item.identificacion == identificacion:
                 return item
         return None
+
+    def eliminar(self, identificacion):
+        personas = self.consultarTodos()
+        remove(self.file)
+        for item in personas:
+            if item.identificacion != identificacion:
+                self.guardarPersona(item)
+
+    def editar(self, persona):
+        personas = self.consultarTodos()
+        remove(self.file)
+        for item in personas:
+            if item.identificacion != persona.identificacion:
+                self.guardarPersona(item)
+            else:
+                self.guardarPersona(persona)
