@@ -12,6 +12,7 @@ from BLL.PersonaService import PersonaService
 from Entity.Persona import *
 
 personaService = PersonaService()
+personas = []
 
 
 def ventana():
@@ -32,7 +33,9 @@ def ventana():
         lblPr.configure(text=str(""))
 
     def buscarXId():
-        persona = personaService.buscarXIdentificacion(txtI.get())
+        persona = personaService.buscarXIdentificacionBD(txtI.get())
+        limpiar()
+        txtI.insert(0, persona.identificacion)
         txt.insert(0, persona.nombre)
         combo.set(persona.sexo)
         txtE.insert(0, int(persona.edad))
@@ -68,7 +71,7 @@ def ventana():
             persona = Persona(identificacion, nombre, sexo, edad)
             persona.calcularpulsacion()
             lblPr.configure(text=str(persona.pulsaciones))
-            mensaje = personaService.guardarPersona(persona)
+            mensaje = personaService.guardarPersonaBD(persona)
         except:
             mensaje = "Error al momento de guardar los datos. Por favor, verifique que llenó todos los campos. "
         messagebox.showinfo("Mensaje", mensaje)
@@ -81,7 +84,7 @@ def ventana():
     btnC.grid(column=0, row=16, pady=10)
 
     def eliminar():
-        mensaje = personaService.eliminar(txtI.get())
+        mensaje = personaService.eliminarBD(txtI.get())
         messagebox.showinfo("Mensaje", mensaje)
         limpiar()
 
@@ -96,7 +99,7 @@ def ventana():
         persona = Persona(identificacion, nombre, sexo, edad)
         persona.calcularpulsacion()
         lblPr.configure(text=str(persona.pulsaciones))
-        mensaje = personaService.editar(persona)
+        mensaje = personaService.editarBD(persona)
         messagebox.showinfo("Mensaje", mensaje)
         limpiar()
 
@@ -108,7 +111,9 @@ def ventana():
 
 
 def createnewWindow():
-    personas = personaService.consultarTodos()
+    global personas
+    personas.clear()
+    personas = personaService.consultarTodosBD()
     if personas is None:
 
         messagebox.showinfo("Mensaje", "La lista está vacía.")

@@ -2,7 +2,7 @@ from DAL.PersonaRepository import PersonaRpository
 
 
 class PersonaService(object):
-    """description of class"""
+    """MANEJO DE ARCHIVO DE TEXTO"""
 
     personaRepository = PersonaRpository()
 
@@ -33,6 +33,36 @@ class PersonaService(object):
     def editar(self, persona):
         try:
             self.personaRepository.editar(persona)
+            return "Perosna modificada correctamente. "
+        except:
+            return "Error al momento de modificar a la persona. "
+
+    """MANEJ0 DE BASE DE DATOS (SQLite)"""
+
+    def guardarPersonaBD(self, persona):
+        try:
+
+            self.personaRepository.guardarPersonaBD(persona)
+            return "Persona guaradada correctamente. "
+
+        except:
+            return "Error al guardar la persona. "
+
+    def consultarTodosBD(self):
+        personas = self.personaRepository.consultarTodosBD()
+        return personas
+
+    def buscarXIdentificacionBD(self, identificacion):
+        persona = self.personaRepository.buscarXIdentificacionBD(identificacion)
+        return persona
+
+    def eliminarBD(self, identificacion):
+        self.personaRepository.eliminarBD(identificacion)
+        return "Perosna eliminada correctamente. "
+
+    def editarBD(self, persona):
+        try:
+            self.personaRepository.editarBD(persona)
             return "Perosna modificada correctamente. "
         except:
             return "Error al momento de modificar a la persona. "

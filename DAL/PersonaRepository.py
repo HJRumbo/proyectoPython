@@ -1,15 +1,26 @@
+import sqlite3
 from array import array
 from os import remove
 import os.path as path
+from tkinter import messagebox
 
+from DAL.ConnectionManager import ConnectionManager
 from Entity.Persona import Persona
 
 
 class PersonaRpository(object):
-    """description of class"""
+    """MANEJO DE ARCHIVO DE TEXTO"""
+
+    def __init__(self):
+        self.conexion = self.connectionManager.crear_conexion(self.base_datos)
+        self.connectionManager.crear_tabla(self.conexion, self.tabla)
 
     file = "Persona.txt"
     personas = []
+    connectionManager = ConnectionManager()
+    base_datos = 'pulsacion.db'
+    tabla = """Create table if not exists persona
+    (identificacion text primary key, nombre text, sexo text, edad int, pulsaciones double)"""
 
     def guardarPersona(self, persona):
         """description of method"""
@@ -78,3 +89,56 @@ class PersonaRpository(object):
                 self.guardarPersona(item)
             else:
                 self.guardarPersona(persona)
+
+    """MANEJ0 DE BASE DE DATOS (SQLite)"""
+
+    def guardarPersonaBD(self, persona):
+        """description of method"""
+        sql = "INSERT INTO persona(identificacion, nombre, sexo, edad, pulsaciones) VALUES (?,?,?,?,?)"
+        parametros = (persona.identificacion, persona.nombre, persona.sexo, persona.edad, persona.pulsaciones)
+        cursor = self.conexion.cursor()
+        result = cursor.execute(sql, parametros)
+        self.conexion.commit()
+        cursor.close()
+
+    def consultarTodosBD(self):
+        """description of method"""
+        cursor = self.conexion.cursor()
+        cursor.execute("SELECT * FROM persona")
+        personas = cursor.fetchall()
+        for person in personas:
+            identificacion = person[0]
+            nombre = person[1]
+            sexo = person[2]
+            edad = person[3]
+
+            persona = Persona(identificacion, nombre, sexo, float(edad))
+            persona.calcularpulsacion()
+
+            self.personas.append(persona)
+        return self.personas
+        cursor.close()
+
+    def buscarXIdentificacionBD(self, identificacion):
+        personas = self.consultarTodosBD()
+        for item in personas:
+            if item.identificacion == identificacion:
+                return item
+        return None
+
+    def eliminarBD(self, identificacion):
+        cursor = self.conexion.cursor()
+
+        sql = "DELETE FROM persona WHERE identificacion = ?"
+        cursor.execute(sql, (identificacion,))
+
+        self.conexion.commit()
+
+    def editarBD(self, persona):
+        cursor = self.conexion.cursor()
+
+        sql = "UPDATE persona SET nombre = ?, sexo = ?, edad = ?, pulsaciones = ? WHERE identificacion = ?"
+        parametros = (persona.nombre, persona.sexo, persona.edad, persona.pulsaciones, persona.identificacion)
+        cursor.execute(sql, parametros)
+
+        self.conexion.commit()
