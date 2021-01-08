@@ -58,7 +58,7 @@ def ventana():
     txtE = Entry(window, width=20)
     txtE.grid(column=4, row=9, padx=30, pady=5)
     lblP = Label(window, text="Pulsaciones")
-    lblP.grid(column=0, row=12, padx=10)
+    lblP.grid(column=0, row=12, padx=10) 
     lblPr = Label(window)
     lblPr.grid(column=4, row=12, padx=10)
 
